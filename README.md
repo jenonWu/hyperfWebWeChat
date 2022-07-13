@@ -66,6 +66,10 @@ php bin/hyperf.php start
   http://hyperf-base.com/admin/
 * webSocket地址：
   ws://hyperf-base.com/ws/
+* 账号密码
+  后台：admin  admin123
+  用户：15913137111   123123
+        15913137222   123123
 
 # 前端聊天模板文件git
 https://github.com/jenonWu/webWeChat  
