@@ -1,36 +1,71 @@
-# Introduction
+# 简介
 
-This is a skeleton application using the Hyperf framework. This application is meant to be used as a starting place for those looking to get their feet wet with Hyperf Framework.
+这是个使用Hyperf框架搭建的一个简易的webSocket聊天系统。
 
-# Requirements
+# 部署
 
-Hyperf has some requirements for the system environment, it can only run under Linux and Mac environment, but due to the development of Docker virtualization technology, Docker for Windows can also be used as the running environment under Windows.
+需要监听9501和9501
 
-The various versions of Dockerfile have been prepared for you in the [hyperf/hyperf-docker](https://github.com/hyperf/hyperf-docker) project, or directly based on the already built [hyperf/hyperf](https://hub.docker.com/r/hyperf/hyperf) Image to run.
+* nignx配置
+```
+upstream web {
+    server 127.0.0.1:9501;
+}
+upstream websocket {
+    server 127.0.0.1:9502;
+}
+server
+{
+    listen 80;
+    server_name hyperf-base.com;
+        
+    add_header Access-Control-Allow-Origin *;
+    add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+    add_header Access-Control-Allow-Headers 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization';          
+    #WebSocket
+    location /ws {
+        # WebSocket Header
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade websocket;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_read_timeout 60s ;
+        
+        proxy_pass http://websocket;
+    }
+     
+    #web 
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        
+        
+        proxy_pass http://web;
+    }
+    #access_log  /home/wwwlogs/hyperf.log main_log;
+}
+```
 
-When you don't want to use Docker as the basis for your running environment, you need to make sure that your operating environment meets the following requirements:  
+# 配置
 
- - PHP >= 7.3
- - Swoole PHP extension >= 4.5，and Disabled `Short Name`
- - OpenSSL PHP extension
- - JSON PHP extension
- - PDO PHP extension （If you need to use MySQL Client）
- - Redis PHP extension （If you need to use Redis Client）
- - Protobuf PHP extension （If you need to use gRPC Server of Client）
+数据库文件在项目根目录下，导入数据库，修改好连接配置即可。
 
-# Installation using Composer
+# 开启服务
 
-The easiest way to create a new Hyperf project is to use Composer. If you don't have it already installed, then please install as per the documentation.
+在项目根目录下启动hyperf, linux 输入命令：
+```
+php bin/hyperf.php start
+```
 
-To create your new Hyperf project:
+# 测试访问
 
-$ composer create-project hyperf/hyperf-skeleton path/to/install
+* 基础后台地址：
+  http://hyperf-base.com/admin/
+* webSocket地址：
+  ws://hyperf-base.com/ws/
 
-Once installed, you can run the server immediately using the command below.
-
-$ cd path/to/install
-$ php bin/hyperf.php start
-
-This will start the cli-server on port `9501`, and bind it to all network interfaces. You can then visit the site at `http://localhost:9501/`
-
-which will bring up Hyperf default home page.
+# 前端聊天模板文件git
+  
