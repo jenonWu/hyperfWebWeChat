@@ -67,8 +67,8 @@ php bin/hyperf.php start
 * webSocket地址：
   ws://hyperf-base.com/ws/
 * 账号密码
-  后台：admin  admin123
-  用户：15913137111   123123
+  后台：admin  admin123 <br/>
+  用户：15913137111   123123<br/>
         15913137222   123123
 
 # 前端聊天模板文件git
