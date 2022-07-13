@@ -1,0 +1,95 @@
+{include file="admin/header" /}
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form" method="post" action="{:url('admin/node/addPost')}">
+                  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>上级
+                      </label>
+                      <div class="layui-input-inline">
+						<select name="pid" >
+						  <option value="0">顶级分类</option>
+						  {foreach name="nodes" item="vo"}
+						  <option value="{$vo['id']}" {$pid==$vo['id']?'selected': ''}>{$vo['html']}{$vo['name']}</option>
+						  {/foreach}
+						</select>
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>节点名称
+                      </label>
+                      <div class="layui-input-inline">
+							<input type="text" id="name" name="name" lay-verify="required" autocomplete="no" class="layui-input">
+                      </div>
+                  </div>
+
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>控制器
+                      </label>
+                      <div class="layui-input-inline">
+							<input type="text" id="controller" name="controller" lay-verify="required" autocomplete="no" class="layui-input">
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>方法
+                      </label>
+                      <div class="layui-input-inline">
+							<input type="text" id="action" name="action" lay-verify="required" autocomplete="no" class="layui-input">
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">参数</label>
+                      <div class="layui-input-inline">
+							<input type="text" id="param" name="param" autocomplete="no" class="layui-input">
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">排序</label>
+                      <div class="layui-input-inline">
+							<input type="text" id="sort" name="sort" lay-verify="required" autocomplete="no" value="10000" class="layui-input">
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">图标</label>
+                      <div class="layui-input-inline">
+							<input type="text" id="icon" name="icon"  class="layui-input">
+                      </div>
+					  <div class="layui-form-mid layui-word-aux">
+                          查找<a  target="_blank"  href="{:url('admin/node/unicode')}">图标</a>
+                      </div>
+                  </div>
+                  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red"></span>备注
+                      </label>
+                      <div class="layui-input-inline">
+							<textarea placeholder="备注" id="remark" name="remark" class="layui-textarea"></textarea>
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>是否显示
+                      </label>
+                      <div class="layui-input-block">
+						  <input type="radio" name="status" value="1" title="显示" checked="">
+						  <input type="radio" name="status" value="0" title="隐藏">
+					  </div>
+                  </div>
+                  <div class="layui-form-item">
+                      <label for="button" class="layui-form-label">
+                      </label>
+                      <button  class="layui-btn" lay-filter="sub_from" lay-submit="">
+                          增加
+                      </button>
+                  </div>
+              </form>
+            </div>
+        </div>
+    </body>
+
+</html>

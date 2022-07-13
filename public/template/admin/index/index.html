@@ -1,0 +1,138 @@
+{include file="admin/header" title="$project_name"  /}
+<style>
+    .DBbut { margin-right: 10px;}
+    .DBbut a.layui-btn-disabled {color:#999999}
+</style>
+</head>
+<body class="index">
+<!-- 顶部开始 -->
+<div class="container">
+    <div class="logo">
+        <a href="{:url('index')}">{:config('app.project_name')} 后台系统</a></div>
+    <div class="left_open">
+        <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+    </div>
+    <div class="clearCache">
+        <a onclick="xadmin.open('清除缓存','{:url(\'admin/index/clearCache\')}',500,500)" class="layui-btn  layui-btn-normal">清除缓存</a>
+    </div>
+
+    <ul class="layui-nav right" lay-filter="">
+
+        <li class="layui-nav-item">
+            <a href="javascript:;">{$adminInfo.username}</a>
+            <dl class="layui-nav-child">
+                <!-- 二级菜单 -->
+                <dd>
+                    <a onclick="xadmin.open('修改信息','{:url(\'admin/admin/edit\', [\'id\'=>$adminInfo.id])}', 600, 500)">修改信息</a></dd>
+                <!--<dd>
+                    <a onclick="xadmin.open('切换帐号','http://www.baidu.com')">切换帐号</a></dd>-->
+                <dd>
+                    <a href="{:url('admin/common/logout')}">退出</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item to-index">
+            <!-- <a href="{:url('Index/index/index')}">前台首页</a></li> -->
+        </li>
+    </ul>
+</div>
+<!-- 顶部结束 -->
+<!-- 中部开始 -->
+<!-- 左侧菜单开始 -->
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+            {foreach name="nodes" item="vo"}
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="{$vo['name']}">{:empty($vo['icon'])?'':$vo['icon']}</i>
+                    <cite>{$vo['name']}</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                {notempty name="vo['child']"}
+                <ul class="sub-menu">
+                    {foreach name="vo['child']" item="v"}
+                    <li>
+                        {php}$url = url('admin/'.$v['controller']."/".$v['action']);
+                        $url .=empty($v['param'])?'':"?".$v['param'];
+                        {/php}
+                        <a onclick="xadmin.add_tab('{$v[\'name\']}','{$url}', true)">
+                            <i class="iconfont">{:empty($v['icon'])?'&#xe6a7;':$v['icon']}</i>
+                            <cite>{$v['name']}</cite>
+                            {notempty name="v['child']"}<i class="iconfont nav_right">&#xe697;</i>{/notempty}</a>
+                        {notempty name="v['child']"}
+                        <ul class="sub-menu">
+                            {foreach name="v['child']" item="i"}
+                            <li>
+                                {php}$iurl = url('admin/'.$i['controller']."/".$i['action'],$i['param']);{/php}
+                                <a onclick="xadmin.add_tab('{$i[\'name\']}','{$iurl}', true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>{$i['name']}</cite></a>
+                            </li>
+                            {/foreach}
+                        </ul>
+                        {/notempty}
+                    </li>
+                    {/foreach}
+                </ul>
+                {/notempty}
+            </li>
+            {/foreach}
+
+        </ul>
+
+    </div>
+</div>
+<!-- <div class="x-slide_left"></div> -->
+<!-- 左侧菜单结束 -->
+<!-- 右侧主体开始 -->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home">
+                <i class="layui-icon">&#xe68e;</i>我的桌面</li></ul>
+        <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+            <dl>
+                <dd data-type="this">关闭当前</dd>
+                <dd data-type="other">关闭其它</dd>
+                <dd data-type="all">关闭全部</dd></dl>
+        </div>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='{:url("admin/index/welcome")}' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+            </div>
+        </div>
+        <div id="tab_show"></div>
+    </div>
+</div>
+<div class="page-content-bg"></div>
+<style id="theme_style"></style>
+<!-- 右侧主体结束 -->
+<script>
+    layui.use('layer', function(){
+        var $ = layui.jquery;
+        $('.DBbut a').on('click', function(){
+            var othis = $(this),
+                name = othis.data('name');
+            if(!name){
+                return false;
+            }
+            $.ajax({
+                url:"{:url('switchDb')}",
+                type:'post',
+                data:{name:name},
+                success:function(data){
+                    layer.alert("渠道已切换", {icon: 1},function(index){
+                        layer.close(index);
+                        location.reload();
+                    });
+                },
+                error:function(data){
+                    layer.alert("渠道切换失败", {icon: 2});
+                }
+            });
+        });
+    })
+
+</script>
+</body>
+</html>

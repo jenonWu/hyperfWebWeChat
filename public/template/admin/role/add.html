@@ -1,0 +1,91 @@
+{include file="admin/header" /}
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>角色名称
+                      </label>
+                      <div class="layui-input-inline">
+                          <input type="text" id="name" name="name" required="" lay-verify="name"
+                          autocomplete="off" class="layui-input">
+                      </div>
+                  </div>
+                  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red"></span>角色描述
+                      </label>
+                      <div class="layui-input-inline">
+							<textarea placeholder="请输入内容" id="remark" name="remark" class="layui-textarea"></textarea>
+                      </div>
+                  </div>
+				  <div class="layui-form-item">
+                      <label for="name" class="layui-form-label">
+                          <span class="x-red">*</span>状态
+                      </label>
+                      <div class="layui-input-block">
+						  <input type="radio" name="status" value="1" title="启用" checked="">
+						  <input type="radio" name="status" value="0" title="禁用">
+					  </div>
+                  </div>
+                  <div class="layui-form-item">
+                      <label for="button" class="layui-form-label">
+                      </label>
+                      <button  class="layui-btn" lay-filter="add" lay-submit="">
+                          增加
+                      </button>
+                  </div>
+              </form>
+            </div>
+        </div>
+        <script>
+			layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                //自定义验证规则
+                form.verify({
+                    name: function(value) {
+                        if (value.length < 2) {
+                            return '角色名称至少得2个字符啊';
+                        }
+                    },
+                });
+
+                //监听提交
+                form.on('submit(add)', function(data) {
+                    console.log(data);
+					$.ajax({
+						  url:"{:url('admin/role/addPost')}",
+						  type:'post',
+						  data:data.field,
+						  success:function(data){
+							  if(data.code == 0){
+								layer.alert("添加成功", { icon: 1 }, function() {
+									//关闭当前frame
+									xadmin.close();
+
+									// 可以对父窗口进行刷新 
+									xadmin.father_reload();
+								});
+							  }else{
+								layer.alert(data.msg, {icon: 2});
+							  }
+						  },
+						  error:function(data){
+								layer.alert("添加失败", {icon: 2});
+						  }
+					});
+                    return false;
+                });
+
+            });
+		</script>
+
+    </body>
+
+</html>

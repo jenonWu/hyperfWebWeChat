@@ -1,0 +1,173 @@
+{include file="admin/header" title="Base 后台管理系统"  /}
+    </head>
+
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form">
+                              <thead>
+                                <tr>
+                                  <th>节点名称</th>
+                                  <th>节点路径</th>
+                              </thead>
+                              <tbody class="x-cate">
+							  {foreach name="nodes" item="vo" key="key"}
+                                <tr cate-id="{$vo['id']}" fid="{$vo['pid']}" >
+                                  <td>
+									{php}echo str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;",$vo['level']);{/php}
+									
+									{notempty name="$nodes[$key+1]"}
+										{if condition="$nodes[$key+1]['pid'] eq $vo['id']"}
+										<i class="layui-icon x-show" status='true'>&#xe623;</i>
+										{else/}
+											&nbsp;&nbsp; |- &nbsp;&nbsp;
+										{/if}
+									{else/}
+										&nbsp;&nbsp; |- &nbsp;&nbsp;
+									{/notempty}
+									
+									<input type="checkbox" name="ids" lay-filter="select" pid="{$vo['pid']}" level="{$vo['level']}" value="{$vo['id']}" lay-skin="primary" {:empty($vo['role'])?'': "checked='checked'"}>
+									
+                                    {$vo['name']}
+                                  </td>
+                                  <td>{$vo['controller']} / {$vo['action']}</td>
+                                </tr>
+							  {/foreach}
+                                
+                              </tbody>
+                            </table>
+                        </div>
+						<div class="layui-card-header">
+							<input type="hidden" id="role_id" name="role_id" value="{$role_id}" />
+                            <button class="layui-btn layui-btn-danger" onclick="saveAll()">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+          layui.use(['form', "jquery"], function(){
+            form = layui.form;
+			$ = layui.jquery;
+			
+			// 监听复选框
+			form.on('checkbox(select)', function(data){
+				var id = data.value;
+				var pid = data.elem.getAttribute('pid');
+				var level = data.elem.getAttribute('level');
+				if(data.elem.checked && pid !=0){
+					obj = $("tbody input[value="+pid+"]");
+					obj.prop('checked',true);
+					var PPid = obj.attr('pid');
+
+					if(PPid != 0){
+						$("tbody input[value="+PPid+"]").prop('checked',true);
+					}
+				}
+				
+				var index = $("tbody input[name='ids']").index(this);
+				if(data.elem.checked){
+					$("tbody input[name='ids']").each(function(){
+						var i = $("tbody input[name='ids']").index(this);
+						var i_level = $(this).attr('level');
+						if(i>index && i_level>level){
+							$(this).prop('checked',true);
+						}
+						if(i>index && i_level<=level){
+							return false;
+						}
+					});
+				}else{
+					$("tbody input[name='ids']").each(function(){
+						var i = $("tbody input[name='ids']").index(this);
+						var i_level = $(this).attr('level');
+						if(i>index && i_level>level){
+							$(this).prop('checked',false);
+						}
+						if(i>index && i_level<=level){
+							return false;
+						}
+					});
+				}
+				
+				form.render('checkbox');
+			}); 
+			
+			// 分类展开收起的分类的逻辑
+			  // 
+			  $(function(){
+				$("tbody.x-cate tr[fid!='0']").hide();
+				// 栏目多级显示效果
+				$('.x-show').click(function () {
+					if($(this).attr('status')=='true'){
+						$(this).html('&#xe625;'); 
+						$(this).attr('status','false');
+						cateId = $(this).parents('tr').attr('cate-id');
+						$("tbody tr[fid="+cateId+"]").show();
+				   }else{
+						cateIds = [];
+						$(this).html('&#xe623;');
+						$(this).attr('status','true');
+						cateId = $(this).parents('tr').attr('cate-id');
+						getCateId(cateId);
+						for (var i in cateIds) {
+							$("tbody tr[cate-id="+cateIds[i]+"]").hide().find('.x-show').html('&#xe623;').attr('status','true');
+						}
+				   }
+				})
+			  });
+			
+          });
+
+          
+
+          var cateIds = [];
+          function getCateId(cateId) {
+              $("tbody tr[fid="+cateId+"]").each(function(index, el) {
+                  id = $(el).attr('cate-id');
+                  cateIds.push(id);
+                  getCateId(id);
+              });
+          }
+		  
+		  function saveAll(){
+				var arr = new Array();
+				$("tbody input[name='ids']:checked").each(function(i){
+					arr[i] = $(this).val();
+				});
+				if(arr.length <= 0){
+					layer.msg('请选择权限!',{icon: 0,time:1000});
+					return false;
+				}
+				var vals = arr.join(",");
+				var role_id = $("#role_id").val();
+				console.log(arr);
+				$.ajax({
+					  url:"{:url('admin/role/authorizePost')}",
+					  type:'post',
+					  data:{role_id:role_id, nodes:vals},
+					  success:function(data){
+						  if(data.code == 0){
+							layer.alert("保存成功", { icon: 1 }, function() {
+								//关闭当前frame
+								xadmin.close();
+
+								// 可以对父窗口进行刷新 
+								xadmin.father_reload();
+							});
+						  }else{
+							layer.alert(data.msg, {icon: 2});
+						  }
+					  },
+					  error:function(data){
+							layer.alert("保存失败", {icon: 2});
+					  }
+				});
+		  }
+
+        </script>
+    </body>
+</html>

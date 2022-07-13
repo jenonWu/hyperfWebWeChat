@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>异常</title>
+    <link rel="stylesheet" href="__STATIC__/admin/lib/layui/css/layui.css"  media="all">
+    <style type="text/css">
+        html,body{
+            height:100%;
+            width: 100%;
+        }
+        .error-body{
+            height:100%;
+            text-align: center;
+            line-height: 30;
+            font-size:16px;
+        }
+        .error-body i{
+            font-size:20px;
+            color:red;
+        }
+    </style>
+</head>
+<body>
+<div class="error-body">
+    {if ($code eq 0)}
+    <p><i class="layui-icon layui-icon-tips"></i> Gallen :) {:strip_tags($msg)}</p>
+    {else}
+    <p><i class="layui-icon layui-icon-tips"></i> Gallen :( {:strip_tags($msg)}</p>
+    {/if}
+    <p class="jump">
+        页面自动 <a id="href" href="{$url}">跳转</a> 等待时间： <b id="wait">{$wait}</b>
+    </p>
+</div>
+<script type="text/javascript">
+    (function(){
+        var wait = document.getElementById('wait'),
+            href = document.getElementById('href').href;
+        var interval = setInterval(function(){
+            var time = --wait.innerHTML;
+            if(time <= 0) {
+                location.href = href;
+                clearInterval(interval);
+            };
+        }, 1000);
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{include file="admin/header" title="Base 后台管理系统"  /}
+
+    </head>
+    <body>
+        <a class="layui-btn layui-btn-small" style="position:absolute; z-index:2; right:0; top:0; line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+
+                        <div class="layui-card-header">
+                            <button class="layui-btn" onclick="xadmin.open('添加角色','{:url(\'admin/role/add\')}',600,500)"><i class="layui-icon"></i>添加角色</button>
+                        </div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form">
+                              <thead>
+                                <tr>
+                                  <!-- <th> -->
+                                    <!-- <input type="checkbox" name=""  lay-skin="primary"> -->
+                                  <!-- </th> -->
+                                  <th>ID</th>
+                                  <th>角色名称</th>
+                                  <th>描述</th>
+                                  <th>状态</th>
+                                  <th>操作</th>
+                              </thead>
+                              <tbody>
+							  {foreach name="roles" item="vo"}
+                                <tr>
+                                  <!-- <td> -->
+                                    <!-- <input type="checkbox" name=""  lay-skin="primary"> -->
+                                  <!-- </td> -->
+                                  <td>{$vo['id']}</td>
+                                  <td>{$vo['name']}</td>
+                                  <td>{$vo['remark']}</td>
+                                  <td class="td-status">
+									{if condition="$vo['id'] neq 1"}
+										{if condition="$vo['status'] eq 1"}
+										<span class="layui-btn layui-btn-normal layui-btn-mini" onclick="enabling(this, {$vo['id']}, {$vo['status']})">正常</span>
+										{else /}
+										<span class="layui-btn layui-btn-danger layui-btn-mini" onclick="enabling(this, {$vo['id']}, {$vo['status']})">已禁用</span>
+										{/if}
+									{/if}
+								  </td>
+                                  <td class="td-manage">
+								  {if condition="$vo['id'] neq 1"}
+                                      <button type="button" class="layui-btn layui-btn-sm" title="权限设置"  onclick="xadmin.open('权限设置','{:url(\'admin/role/authorize\', [\'id\'=>$vo[\'id\']])}',600,800)"><i class="layui-icon">&#xe631;</i>权限设置</button>
+                                      <button type="button" class="layui-btn layui-btn-sm" title="编辑角色" onclick="xadmin.open('编辑角色','{:url(\'admin/role/edit\', [\'id\'=>$vo[\'id\']])}',600,500)" ><i class="layui-icon">&#xe642;</i></button>
+                                      <button type="button" class="layui-btn layui-btn-sm" title="删除角色" onclick="member_del(this,{$vo['id']})"><i class="layui-icon">&#xe640;</i></button>
+									{/if}
+                                  </td>
+                                </tr>
+								{/foreach}
+                              </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+    <script>
+       /*用户-停用*/
+      function enabling(obj, id, status){
+		  if(status == 0){
+			var msg = '确认要启用吗?';
+			var chackStatus = 1;
+		  }else{
+			var msg = '确认要禁用吗?';
+			var chackStatus = 0;
+		  }
+          layer.confirm(msg, function(index){
+				$.ajax({
+					  url:"{:url('admin/role/enabling')}",
+					  type:'post',
+					  data:{id:id, status:status},
+					  success:function(data){
+						  if(data.code == 0){
+							  if(status == 0){
+								$(obj).html('正常');
+								$(obj).removeClass('layui-btn-danger');
+								$(obj).addClass('layui-btn-normal');
+								$(obj).attr('onclick', "enabling(this, "+id+", "+chackStatus+")");
+								layer.msg('已启用!',{icon: 6,time:1000});
+							  }else{
+								$(obj).html('已禁用');
+								$(obj).addClass('layui-btn-danger');
+								$(obj).removeClass('layui-btn-normal');
+								$(obj).attr('onclick', "enabling(this, "+id+", "+chackStatus+")");
+								layer.msg('已禁用!',{icon: 5,time:1000});
+							  }
+							  //关闭当前frame
+							  //xadmin.close();
+						  }else{
+							layer.alert(data.msg, {icon: 2});
+						  }
+					  },
+					  error:function(data){
+							layer.alert("修改失败", {icon: 2});
+					  }
+				});
+				
+          });
+      }
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              $.ajax({
+				  url:"{:url('admin/role/del')}",
+				  type:'post',
+				  data:{id:id},
+				  success:function(data){
+					  if(data.code == 0){
+							$(obj).parents("tr").remove();
+							layer.msg('已删除!',{icon: 1,time:1000});
+					  }else{
+						layer.alert(data.msg, {icon: 2});
+					  }
+				  },
+				  error:function(data){
+						layer.alert("修改失败", {icon: 2});
+				  }
+			  });
+          });
+      }
+
+    </script>
+
+</html>

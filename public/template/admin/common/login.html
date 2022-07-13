@@ -1,0 +1,96 @@
+<!doctype html>
+<html  class="x-admin-sm">
+<head>
+	<meta charset="UTF-8">
+	<title>{:config('app.project_name')}后台登录</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="__STATIC__/admin/css/font.css">
+	<link rel="stylesheet" href="__STATIC__/admin/css/xadmin.css">
+    <script type="text/javascript" src="__STATIC__/admin/js/jquery.min.js"></script>
+    <script src="__STATIC__/admin/lib/layui/layui.js" charset="utf-8"></script>
+	<link rel="shortcut icon" href="/favicon.ico">
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	<link rel="stylesheet" href="__STATIC__/admin/css/login.css">
+</head>
+<body class="login-bg">
+    <div class="bg-logo"><img src="__STATIC__/admin/images/bg-logo.png" /></div>
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">{:config('app.project_name')}管理系统</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form" >
+            <input name="username" id="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+            <hr class="hr15">
+            <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+            {if condition="config('app.admin_captcha')"}
+            <input name="captcha" id="captcha" placeholder="验证码"  type="text" lay-verify="required" class="captcha layui-input" >
+            <img src="/admin/common/captchaImg" id="captcha_img" class="captcha_img" onclick="getCaptchaImg()" />
+            <input type="hidden" name="captcha_key" id="captcha_key" value="">
+            <hr class="hr15">
+            {/if}
+            <input type="checkbox" name="remember" title="7天免登录" lay-skin="primary" value="1" checked>
+            <hr class="hr15">
+            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+        </form>
+    </div>
+    <script>
+        function getCaptchaImg(){
+            $.ajax({
+                url:"/admin/common/captchaImg",
+                type:'get',
+                success:function(data){
+                    // console.log(data);
+                    $("#captcha_img").attr("src",data.blob);
+                    $("#captcha_key").val(data.key);
+                }
+            });
+        }
+        getCaptchaImg();
+
+        $(function  () {
+            document.getElementById('username').focus();
+
+            layui.use('form', function(){
+
+                var form = layui.form;
+                //监听提交
+                form.on('submit(login)', function(data){
+                    $.ajax({
+                        url:"/admin/common/dologin",
+                        type:'post',
+                        data:data.field,
+                        success:function(data){
+                            console.log(data);
+                            if(data.code != 0){
+                                layer.msg(data.msg, {icon: 2, time:1000});//失败的表情
+                                $("#captcha_img").click();
+                                return false;
+                            }else{
+                                layer.msg('登录成功',{icon: 1, time:1000},function(){
+                                    localStorage.clear();	//清除本地缓存
+                                    location.href= data.data.url;
+                                });
+                            }
+                        },
+                        error:function(data){
+                            layer.msg('登录失败',{icon: 5});//失败的表情
+                            return;
+                        }
+                    });
+                    return false;
+                });
+            });
+
+
+        })
+    </script>
+</body>
+</html>

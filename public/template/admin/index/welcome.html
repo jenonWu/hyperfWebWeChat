@@ -1,0 +1,67 @@
+{include file="admin/header" title="$project_name" /}
+<style>
+    .todayData table th, .todayData table td{
+        min-width: 50px; overflow-x: auto;
+    }
+    .todayData{
+        overflow-x: auto;
+        margin-left: 15px;
+    }
+    .fixedBox {
+        position: relative;
+        padding: 0;
+    }
+    .fixed {
+        position: absolute;
+        top:10px;
+        left: 15px;
+        width: 180px;
+        z-index: 100;
+        border-right: 2px solid #888888;
+    }
+    .todayData .dataTable {
+        margin-left: 207px;
+    }
+</style>
+</head>
+<body>
+<a class="layui-btn layui-btn-small" style="position:absolute; z-index:2; right:0; top:0; line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+    <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <blockquote class="layui-elem-quote">欢迎管理员：
+                        <span class="x-red">{$adminInfo.username}</span>！当前时间:{:date('Y-m-d H:i:s',time())}
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">开发团队</div>
+                <div class="layui-card-body ">
+                    <table class="layui-table">
+                        <tbody>
+                        <tr>
+                            <th>官网</th>
+                            <td>
+                                <a href="http://www.ixyn.cn" target="_blank">www.ixyn.cn</a></td>
+                        </tr>
+                        <tr>
+                            <th>开发者</th>
+                            <td>吴坚龙(328929606@qq.com)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <style id="welcome_style"></style>
+    </div>
+</div>
+</div>
+</body>
+</html>
