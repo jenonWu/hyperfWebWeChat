@@ -63,9 +63,9 @@ php bin/hyperf.php start
 # 测试访问
 
 * 基础后台地址：
-  http://hyperf-base.com/admin/
+  http://xxx/admin/
 * webSocket地址：
-  ws://hyperf-base.com/ws/
+  ws://xxx/ws/
 * 账号密码
   后台：admin  admin123 <br/>
   用户1：15913137111   123123<br/>
